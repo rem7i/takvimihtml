@@ -25,7 +25,8 @@ Takvimi App is a simple web application designed to provide users with prayer ti
 To run the application locally, follow these steps:
 
 1. Clone the repository to your local machine.
-2. Open the `index.html` file in a web browser to view the application.
+2. On your Terminal run this command `python -m http.server 80` within the cloned folder
+3. Open the `index.html` file in an Editor of your choice and see your edits in real-time.
 
 ## Contributing
 
