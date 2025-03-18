@@ -1,0 +1,102 @@
+.app-container {
+    max-width: 600px;
+    margin: 0 auto;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.prayer-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.prayer-item.active {
+    font-weight: bold;
+    color: #194b7e;
+    background-color: rgba(93, 92, 222, 0.1);
+}
+
+.next-prayer-card {
+    background-color: #194b7e;
+    color: white;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+.next-prayer-countdown {
+    font-size: 28px;
+    font-weight: bold;
+    margin-top: 8px;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Dark mode styles */
+.dark body {
+    background-color: #181818;
+    color: #FFFFFF;
+}
+
+.dark .card {
+    background-color: #2d2d2d;
+}
+
+.dark .prayer-item {
+    border-bottom-color: #3d3d3d;
+}
+
+.dark .prayer-item.active {
+    background-color: rgba(93, 92, 222, 0.2);
+}
+
+.dark .notes-card {
+    background-color: #3d3d3d;
+    color: #e0e0e0;
+}
+
+.loader {
+    border: 4px solid rgba(93, 92, 222, 0.1);
+    border-radius: 50%;
+    border-top: 4px solid #194b7e;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+.toast-notification {
+    animation: fadeInOut 3s ease-in-out;
+    max-width: 90%;
+}
+
+@keyframes fadeInOut {
+    0% { opacity: 0; transform: translate(-50%, 20px); }
+    10% { opacity: 1; transform: translate(-50%, 0); }
+    90% { opacity: 1; transform: translate(-50%, 0); }
+    100% { opacity: 0; transform: translate(-50%, -20px); }
+}
+.toast-notification.success {
+    background-color: #28a745;
+}
+.toast-notification.error {
+    background-color: #dc3545;
+}

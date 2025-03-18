@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="sq">
+    <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.jquery.com https://unpkg.com https://d3js.org https://threejs.org https://cdn.plot.ly https://stackpath.bootstrapcdn.com https://maps.googleapis.com https://cdn.tailwindcss.com https://ajax.googleapis.com https://kit.fontawesome.com https://cdn.datatables.net https://maxcdn.bootstrapcdn.com https://code.highcharts.com https://tako-static-assets-production.s3.amazonaws.com https://www.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com https://pfst.cf2.poecdn.net https://puc.poecdn.net https://i.imgur.com https://wikimedia.org https://*.icons8.com https://*.giphy.com https://picsum.photos https://images.unsplash.com; frame-src 'self' https://www.youtube.com https://trytako.com; child-src 'self'; manifest-src 'self'; worker-src 'self'; upgrade-insecure-requests; block-all-mixed-content;">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Takvimi App</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <meta name="theme-color" content="#194b7e">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Takvimi">
+    <!-- Open Graph / Social Media Meta Tags -->
+ <meta property="og:title" content="Takvimi për Kosovën" />
+ <meta property="og:description" content="Takvimi për Kosovën -kohët e namazit për territorin e Kosovës" />
+ <meta property="og:type" content="website" />
+ <meta property="og:site_name" content="Takvimi për Kosovën" />
+ <meta property="og:locale" content="sq_AL" />
+ <meta property="og:image" content="/logo.svg" />
+ <meta property="og:image:alt" content="Takvimi për Kosovën" />
+ <meta property="og:image:width" content="1200" />
+ <meta property="og:image:height" content="630" />
+ <meta property="og:url" content="https://takvimi.app" />
+ <meta name="twitter:card" content="summary_large_image" />
+ <meta name="twitter:title" content="Takvimi për Kosovën" />
+ <meta name="twitter:description" content="Takvimi për Kosovën -kohët e namazit për territorin e Kosovës" />
+ <meta name="twitter:image" content="/logo.svg" />
+ <meta name="twitter:image:alt" content="Takvimi për Kosovën" />
+ <meta name="twitter:site" content="@takvimi" />
+ <meta name="twitter:creator" content="@takvimi" />
+ <!-- SEO Meta Tags -->
+ <meta name="description" content="Takvimi për Kosovën -kohët e namazit për territorin e Kosovës" />
+ <meta name="keywords" content="takvimi, takvimi per kosove, takvimi per kosove 2025, takvimi 2025, takvimi 2025 per kosove, kohet e namazit, kohet e namazit per kosove, kohet e namazit per kosove 2025, ramazani 2025" />
+ <meta name="author" content="Remzi Nura" />
+    <meta name="robots" content="index, follow" />
+    <link rel="apple-touch-icon" href="icon-192x192.png">
+    <link rel="icon" href="icon-192x192.png">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://unpkg.com/papaparse@5.3.0/papaparse.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_blue.css">
+    <link href="styles.css" rel="stylesheet">
+    </head>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
+    <div class="app-container p-4">
+        <!-- App header -->
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold text-indigo-700 dark:text-indigo-400">Takvimi për territorin e Kosovës</h1>
+        </div>
+        
+        <!-- Tab navigation -->
+        <div class="flex border-b border-gray-300 dark:border-gray-700 mb-6">
+            <button class="tab-btn px-4 py-2 font-medium border-b-2 border-indigo-600 dark:border-indigo-400 text-indigo-600 dark:text-indigo-400" data-tab="today">Sot</button>
+            <button class="tab-btn px-4 py-2 font-medium border-b-2 border-transparent hover:text-indigo-600 dark:hover:text-indigo-400" data-tab="calendar">Kalendari</button>
+            <button class="tab-btn px-4 py-2 font-medium border-b-2 border-transparent hover:text-indigo-600 dark:hover:text-indigo-400" data-tab="festivals">Festat</button>
+        </div>
+        
+        <!-- Tab contents -->
+        <!-- Today Tab -->
+        <div id="today-tab" class="tab-content active">
+            <!-- Date display -->
+            <div class="flex justify-between mb-4">
+                <div id="gregorian-date" class="text-sm font-medium"></div>
+                <div id="hijri-date" class="text-sm font-medium"></div>
+            </div>
+            
+            <!-- Next prayer card -->
+            <div class="next-prayer-card shadow-lg">
+                <h2 id="next-prayer-name" class="text-lg font-semibold">Ngarkohet vakti i radhes...</h2>
+                <div id="next-prayer-countdown" class="next-prayer-countdown">--:--:--</div>
+            </div>
+            
+            <!-- Notes card -->
+            <div id="notes-card" class="bg-yellow-100 dark:bg-yellow-900 p-4 rounded-lg mb-4 shadow-md" style="display: none;">
+                <h3 class="font-medium text-yellow-800 dark:text-yellow-200 mb-2">Shënime:</h3>
+                <div id="notes-content" class="text-yellow-700 dark:text-yellow-300"></div>
+            </div>
+            
+            <!-- Prayer times card -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-md mb-4">
+                
+                <div id="prayer-times-list">
+                    <div class="loader"></div>
+                </div>
+            </div>
+            
+            <!-- Daylight card -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-md">
+                <h3 class="font-medium mb-2 text-gray-700 dark:text-gray-300">Gjatësia e ditës:</h3>
+                <div id="daylight-time" class="text-lg font-medium text-indigo-600 dark:text-indigo-400">Ngarkohen...</div>
+            </div>
+        </div>        
+        <!-- Calendar Tab -->
+        <div id="calendar-tab" class="tab-content">
+            <div class="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-md mb-4">
+                <h3 class="font-medium mb-3 text-gray-700 dark:text-gray-300">Zgjedh datën:</h3>
+                <input type="text" id="datepicker" class="w-full p-2 border border-gray-300 dark:border-gray-700 rounded-md text-base bg-white dark:bg-gray-700" placeholder="Select date">
+            </div>
+            
+            <div id="selected-date-prayers" class="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-md" style="display: none;">
+                <h3 id="selected-date-title" class="font-medium mb-3 text-gray-700 dark:text-gray-300">Vaktet për</h3>
+                <div id="selected-date-prayer-times"></div>
+            </div>
+        </div>        
+        <!-- Festivals Tab -->
+        <div id="festivals-tab" class="tab-content">
+            <div class="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-md">
+                <h3 class="font-medium mb-3 text-gray-700 dark:text-gray-300">Festat fetare për vitin 2025</h3>
+                <div id="festivals-table-container">
+                    <div class="loader"></div>
+                </div>
+            </div>
+        </div>
+        <!-- Footer -->
+<footer class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+    <div class="flex flex-col md:flex-row justify-between items-center">
+        <div class="mb-4 md:mb-0">
+            <p class="text-sm text-gray-600 dark:text-gray-400">
+                Copyright © 2025 <a href="https://takvimi.app" class="text-indigo-600 dark:text-indigo-400 hover:underline">Takvimi.app</a> | All Rights Reserved
+            </p>
+        </div>
+        <div class="flex items-center space-x-4">
+            <a href="https://github.com/rem7i" class="text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-200">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-github" viewBox="0 0 16 16">
+                    <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+                </svg>
+            </a>
+            <a href="https://www.facebook.com/remzi.nuur/" class="text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-200">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-facebook" viewBox="0 0 16 16">
+                    <path d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951"/>
+                  </svg>
+            </a>
+        </div>
+    </div>
+    <div class="mt-4 text-center text-xs text-gray-500 dark:text-gray-500">
+        With ❤️, <a href="https://remzinura.com/" class="text-indigo-600 dark:text-indigo-400 hover:underline">Rem7i</a>
+    </div>
+</footer>
+
+    </div>
+    <script>
+        
+        // Check for dark mode
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+        
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        });
+        
+        // Variables
+        let prayerData = [];
+        let festivals = [];
+        let csvLoaded = false;
+        
+        // Tab navigation
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+        
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Remove active class from all tabs and contents
+                tabButtons.forEach(btn => {
+                    btn.classList.remove('border-indigo-600', 'dark:border-indigo-400', 'text-indigo-600', 'dark:text-indigo-400');
+                    btn.classList.add('border-transparent');
+                });
+                
+                tabContents.forEach(content => {
+                    content.classList.remove('active');
+                });
+                
+                // Add active class to clicked tab and related content
+                button.classList.add('border-indigo-600', 'dark:border-indigo-400', 'text-indigo-600', 'dark:text-indigo-400');
+                button.classList.remove('border-transparent');
+                
+                const tabId = button.getAttribute('data-tab');
+                document.getElementById(`${tabId}-tab`).classList.add('active');
+            });
+        });
+        // Load prayer data
+        function parseCSVData(csvText) {
+    return new Promise((resolve, reject) => {
+        Papa.parse(csvText, {
+            header: true,
+            complete: (results) => resolve(results.data),
+            error: (error) => reject(error)
+        });
+    });
+}
+
+        
+       // Replace the hardcoded sampleCSV with fetch call
+async function loadPrayerData() {
+    try {
+        // Fetch the CSV file
+        const response = await fetch('prayer_times.csv');
+        const csvText = await response.text();
+        
+        // Parse the CSV data
+        const data = await parseCSVData(csvText);
+        prayerData = data;
+        
+        // Extract festivals
+        festivals = data.filter(row => row.Festat && row.Festat.trim() !== '');
+        
+        csvLoaded = true;
+        
+        // Initialize app with data
+        updateTodayView();
+        updateFestivalsView();
+        initializeDatePicker();
+        
+        // Start countdown
+        startNextPrayerCountdown();
+        
+    } catch (error) {
+        console.error('Error loading prayer data:', error);
+        alert('Dështoi në ngarkimin e të dhënave. Ju lutem, provoni përseri.');
+    }
+}
+
+        
+               
+        // Get prayer times for a specific date
+        function getPrayerTimesForDate(dateStr) {
+            if (!csvLoaded) return null;
+            
+            // Convert date to format used in CSV (d-MMM)
+            const date = new Date(dateStr);
+            const day = date.getDate();
+            const month = date.toLocaleString('en', { month: 'short' });
+            const formattedDate = `${day}-${month}`;
+            
+            // Find matching prayer times
+            return prayerData.find(row => row.Date === formattedDate);
+        }
+        
+        // Get today's prayer times
+        function getTodayPrayerTimes() {
+            if (!csvLoaded) return null;
+            
+            const now = new Date();
+            const day = now.getDate();
+            const month = now.toLocaleString('en', { month: 'short' });
+            const formattedDate = `${day}-${month}`;
+            
+            // For demo purposes, get the first day if today's date isn't in the sample
+            const result = prayerData.find(row => row.Date === formattedDate) || prayerData[0];
+            return result;
+        }
+        
+        // Determine next prayer
+        function getNextPrayer(prayerTimes) {
+            if (!prayerTimes) return null;
+            
+            const now = new Date();
+            const currentTime = now.getHours() * 60 + now.getMinutes();
+            
+            const prayers = [
+                { name: 'Imsaku', time: prayerTimes.Imsaku },
+                { name: 'Sabahu', time: prayerTimes.Sabahu },
+                { name: 'Lindja e Diellit', time: prayerTimes.Lindja },
+                { name: 'Dreka', time: prayerTimes.Dreka },
+                { name: 'Ikindia', time: prayerTimes.Ikindia },
+                { name: 'Akshami', time: prayerTimes.Akshami },
+                { name: 'Jacia', time: prayerTimes.Jacia }
+            ];
+            
+            // Convert prayer times to minutes since midnight
+            prayers.forEach(prayer => {
+                const [hours, minutes] = prayer.time.split(':').map(Number);
+                prayer.minutesSinceMidnight = hours * 60 + minutes;
+            });
+            
+            // Find the next prayer
+            for (const prayer of prayers) {
+                if (prayer.minutesSinceMidnight > currentTime) {
+                    return prayer;
+                }
+            }
+            
+            // If no prayer is found, return the first prayer of the next day
+            return { name: 'Imsaku', time: prayers[0].time, isNextDay: true };
+        }
+        
+        // Start countdown to next prayer
+        function startNextPrayerCountdown() {
+            const updateCountdown = () => {
+                const todayPrayers = getTodayPrayerTimes();
+                if (!todayPrayers) return;
+                
+                const nextPrayer = getNextPrayer(todayPrayers);
+                if (!nextPrayer) return;
+                
+                // Update next prayer name
+                document.getElementById('next-prayer-name').textContent = `${nextPrayer.name} - ${nextPrayer.time}`;
+                
+                // Calculate time remaining
+                const now = new Date();
+                let targetTime = new Date(now);
+                
+                const [hours, minutes] = nextPrayer.time.split(':').map(Number);
+                targetTime.setHours(hours, minutes, 0, 0);
+                
+                if (nextPrayer.isNextDay) {
+                    targetTime.setDate(targetTime.getDate() + 1);
+                }
+                
+                // Calculate difference in milliseconds
+                let diff = targetTime - now;
+                
+                // If difference is negative, set target to next day
+                if (diff < 0) {
+                    targetTime.setDate(targetTime.getDate() + 1);
+                    diff = targetTime - now;
+                }
+                
+                // Convert to hours, minutes, seconds
+                const hoursRemaining = Math.floor(diff / (1000 * 60 * 60));
+                const minutesRemaining = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const secondsRemaining = Math.floor((diff % (1000 * 60)) / 1000);
+                
+                // Format countdown
+                const countdown = `${hoursRemaining.toString().padStart(2, '0')}:${minutesRemaining.toString().padStart(2, '0')}:${secondsRemaining.toString().padStart(2, '0')}`;
+                
+                // Update countdown display
+                document.getElementById('next-prayer-countdown').textContent = 'Edhe: ' + countdown;
+            };
+            
+            // Update immediately and then every second
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+        }
+        
+        // Update today's view
+        function updateTodayView() {
+            // Get today's prayer times
+            const todayPrayers = getTodayPrayerTimes();
+            if (!todayPrayers) {
+                console.error('Nuk u gjeten kohët e namazit për sot.');
+                return;
+            }
+            
+            // Update date display
+            const today = new Date();
+            const isFriday = today.getDay() === 5; // 5 is Friday
+            // Gregorian date in Albanian format
+            const days = ['E diel', 'E hënë', 'E martë', 'E mërkurë', 'E enjte', 'E premte', 'E shtunë'];
+            const months = ['janar', 'shkurt', 'mars', 'prill', 'maj', 'qershor', 'korrik', 'gusht', 'shtator', 'tetor', 'nëntor', 'dhjetor'];
+            
+            const dayName = days[today.getDay()];
+            const day = today.getDate();
+            const month = months[today.getMonth()];
+            const year = today.getFullYear();
+            
+            const gregorianDateStr = `${dayName}, ${day} ${month} ${year}`;
+            document.getElementById('gregorian-date').textContent = gregorianDateStr;
+            
+                      
+            // Add Hijri date with Albanian month names
+        document.addEventListener('DOMContentLoaded', function() {
+            // Define Albanian month names for the Hijri calendar
+            const albanianMonths = [
+                'Muharrem', 'Safer', 'Rebiul-Evvel', 'Rebiul-Ahir', 
+                'Xhumadel-Ula', 'Xhumadel-Ahireh', 'Rexheb', "Sha'ban", 
+                'Ramazan', "Dhul-Ka'de", 'Dhul-Hixhxhe'
+            ];
+            const hijriDateElement = document.getElementById('hijri-date');
+            let hijriDate;
+            try {
+                hijriDate = new Intl.DateTimeFormat('en-US-u-ca-islamic', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+                }).format(new Date());
+            } catch (e) {
+                hijriDate = 'Hijri date not supported';
+            }
+            hijriDateElement.textContent = hijriDate;
+
+            });
+            
+            // Display notes if available
+            if (todayPrayers.Shenime && todayPrayers.Shenime.trim() !== '') {
+                document.getElementById('notes-content').textContent = todayPrayers.Shenime;
+                document.getElementById('notes-card').style.display = 'block';
+            } else {
+                document.getElementById('notes-card').style.display = 'none';
+            }
+            
+            // Display prayer times
+            const prayerTimesList = document.getElementById('prayer-times-list');
+            prayerTimesList.innerHTML = '';
+            
+            const nextPrayer = getNextPrayer(todayPrayers);
+            const prayers = [
+                { name: 'Imsaku', time: todayPrayers.Imsaku },
+                { name: 'Sabahu', time: todayPrayers.Sabahu },
+                { name: 'Lindja e Diellit', time: todayPrayers.Lindja },
+                { name: isFriday ? 'Xhumaja' : 'Dreka', time: todayPrayers.Dreka },
+                { name: 'Ikindia', time: todayPrayers.Ikindia },
+                { name: 'Akshami', time: todayPrayers.Akshami },
+                { name: 'Jacia', time: todayPrayers.Jacia }
+            ];
+            
+            prayers.forEach(prayer => {
+                const item = document.createElement('div');
+                item.className = 'prayer-item rounded-md transition-colors duration-200';
+                
+                // Highlight next prayer
+                if (nextPrayer && prayer.name === nextPrayer.name && !nextPrayer.isNextDay) {
+                    item.classList.add('active');
+                }
+                
+                item.innerHTML = `
+                    <div class="font-medium text-gray-500 dark:text-black">${prayer.name}</div>
+                    <div class="text-gray-500 dark:text-black">${prayer.time}</div>
+                `;
+                
+                prayerTimesList.appendChild(item);
+            });
+            
+            // Calculate and display daylight time
+            const sunriseTime = todayPrayers.Lindja;
+            const sunsetTime = todayPrayers.Akshami;
+            
+            // Convert to minutes
+            const [sunriseHours, sunriseMinutes] = sunriseTime.split(':').map(Number);
+            const [sunsetHours, sunsetMinutes] = sunsetTime.split(':').map(Number);
+            
+            const sunriseInMinutes = sunriseHours * 60 + sunriseMinutes;
+            const sunsetInMinutes = sunsetHours * 60 + sunsetMinutes;
+            
+            // Calculate duration in minutes
+            const daylightMinutes = sunsetInMinutes - sunriseInMinutes;
+            
+            // Convert to hours and minutes
+            const daylightHours = Math.floor(daylightMinutes / 60);
+            const remainingMinutes = daylightMinutes % 60;
+            
+            // Display daylight time
+            document.getElementById('daylight-time').textContent = `${daylightHours} orë e ${remainingMinutes} minuta`;
+        }
+        
+        // Initialize date picker
+        function initializeDatePicker() {
+            flatpickr('#datepicker', {
+                dateFormat: 'Y-m-d',
+                onChange: function(selectedDates, dateStr) {
+                    displaySelectedDatePrayers(dateStr);
+                }
+            });
+        }
+        
+        // Display prayer times for selected date
+        function displaySelectedDatePrayers(dateStr) {
+            const prayerTimes = getPrayerTimesForDate(dateStr);
+            if (!prayerTimes) {
+                alert('Nuk u gjetën vaktet për datën e zgjedhur.');
+                return;
+            }
+            
+            // Format the date in Albanian
+            const date = new Date(dateStr);
+            const days = ['E diel', 'E hënë', 'E martë', 'E mërkurë', 'E enjte', 'E premte', 'E shtunë'];
+            const months = ['janar', 'shkurt', 'mars', 'prill', 'maj', 'qershor', 'korrik', 'gusht', 'shtator', 'tetor', 'nëntor', 'dhjetor'];
+            
+            const dayName = days[date.getDay()];
+            const day = date.getDate();
+            const month = months[date.getMonth()];
+            const year = date.getFullYear();
+            
+            const formattedDate = `${dayName}, ${day} ${month} ${year}`;
+            
+            // Update title
+            document.getElementById('selected-date-title').textContent = `Vaktet për - ${formattedDate}`;
+            
+            // Display prayer times
+            const prayerTimesList = document.getElementById('selected-date-prayer-times');
+            prayerTimesList.innerHTML = '';
+            
+            const prayers = [
+                { name: 'Imsaku', time: prayerTimes.Imsaku },
+                { name: 'Sabahu', time: prayerTimes.Sabahu },
+                { name: 'Lindja e Diellit', time: prayerTimes.Lindja },
+                { name: 'Dreka', time: prayerTimes.Dreka },
+                { name: 'Ikindia', time: prayerTimes.Ikindia },
+                { name: 'Akshami', time: prayerTimes.Akshami },
+                { name: 'Jacia', time: prayerTimes.Jacia }
+            ];
+            
+            prayers.forEach(prayer => {
+                const item = document.createElement('div');
+                item.className = 'prayer-item rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200';
+                
+                item.innerHTML = `
+                    <div class="font-medium text-gray-500 dark:text-black">${prayer.name}</div>
+                    <div class="text-gray-500 dark:text-black">${prayer.time}</div>
+                `;
+                
+                prayerTimesList.appendChild(item);
+            });
+            
+            // Show the prayer times container
+            document.getElementById('selected-date-prayers').style.display = 'block';
+        }
+        
+        // Update festivals view
+        function updateFestivalsView() {
+            const tableContainer = document.getElementById('festivals-table-container');
+            
+            if (festivals.length === 0) {
+                tableContainer.innerHTML = '<p class="text-center py-4">Nuk u gjetën festat për këtë vit.</p>';
+                return;
+            }
+            
+            // Create table
+            const tableHTML = `
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                        <thead>
+                            <tr>
+                                <th class="px-6 py-3 bg-gray-50 dark:bg-gray-800 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Festa</th>
+                                <th class="px-6 py-3 bg-gray-50 dark:bg-gray-800 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Data</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                            ${festivals.map(festival => {
+                                // Parse the date from d-MMM format
+                                const [day, monthAbbr] = festival.Date.split('-');
+                                
+                                // Map month abbreviation to month number (basic approximation)
+                                const monthMap = {
+                                    'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'May': 4, 'Jun': 5,
+                                    'Jul': 6, 'Aug': 7, 'Sep': 8, 'Oct': 9, 'Nov': 10, 'Dec': 11
+                                };
+                                
+                                const month = monthMap[monthAbbr];
+                                
+                                // Create date object (use 2025 as the year per requirements)
+                                const date = new Date(2025, month, parseInt(day));
+                                
+                                // Format the date in Albanian
+                                const days = ['E diel', 'E hënë', 'E martë', 'E mërkurë', 'E enjte', 'E premte', 'E shtunë'];
+                                const months = ['janar', 'shkurt', 'mars', 'prill', 'maj', 'qershor', 'korrik', 'gusht', 'shtator', 'tetor', 'nëntor', 'dhjetor'];
+                                
+                                const dayName = days[date.getDay()];
+                                const monthName = months[date.getMonth()];
+                                
+                                const formattedDate = `${dayName}, ${day} ${monthName} 2025`;
+                                
+                                return `
+                                    <tr>
+                                        <td class="px-6 py-4 text-sm text-gray-700 dark:text-gray-300">${festival.Festat}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">${formattedDate}</td>
+                                        
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            tableContainer.innerHTML = tableHTML;
+        }
+        
+        // Load prayer data
+        loadPrayerData();
+
+        // Initialize date picker
+        initializeDatePicker();
+    </script>
+    <script src="index.js" crossorigin="anonymous"></script>
+    
+</body>
+</html>
