@@ -83,20 +83,25 @@
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
-.toast-notification {
-    animation: fadeInOut 3s ease-in-out;
-    max-width: 90%;
+
+#share-button {
+    transition: all 0.2s ease;
 }
 
-@keyframes fadeInOut {
-    0% { opacity: 0; transform: translate(-50%, 20px); }
-    10% { opacity: 1; transform: translate(-50%, 0); }
-    90% { opacity: 1; transform: translate(-50%, 0); }
-    100% { opacity: 0; transform: translate(-50%, -20px); }
+#share-button:hover {
+    transform: translateY(-2px);
 }
-.toast-notification.success {
-    background-color: #28a745;
+
+#share-button:active {
+    transform: translateY(0);
 }
-.toast-notification.error {
-    background-color: #dc3545;
+
+@media (prefers-color-scheme: dark) {
+    #share-button {
+        background-color: #6366f1;
+    }
+    
+    #share-button:hover {
+        background-color: #4f46e5;
+    }
 }
